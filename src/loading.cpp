@@ -1,4 +1,5 @@
 #include "loading.hpp"
+#include <math.h>
 #include TIME_INCLUDE
 #define PI 3.14159265358979323846f
 Loading::Loading(Draw *draw)
