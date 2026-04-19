@@ -577,9 +577,9 @@ void GhoulsGame::renderEnvironment(Game *game)
 {
     if (game)
     {
+        // renderWalls(game);
         renderHouses(game);
         renderTrees(game);
-        // renderWalls(game);
     }
 }
 
