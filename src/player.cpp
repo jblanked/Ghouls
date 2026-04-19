@@ -81,6 +81,7 @@ void Player::drawCurrentView(Draw *canvas)
 {
     if (!canvas)
         return;
+
     switch (currentMainView)
     {
     case GameViewTitle:
@@ -116,6 +117,22 @@ void Player::drawCurrentView(Draw *canvas)
     default:
         canvas->fillScreen(0xFFFF);
         canvas->text(0, canvas->getDisplaySize().y * 10 / 64, "Unknown View", 0x0000);
+        return;
+    }
+
+    switch (currentMainView)
+    {
+    case GameViewTitle:
+    case GameViewSystemMenu:
+    case GameViewLobbyMenu:
+    case GameViewLobbyBrowser:
+    case GameViewWelcome:
+    case GameViewLogin:
+    case GameViewRegistration:
+    case GameViewUserInfo:
+        canvas->swap();
+        break;
+    default:
         break;
     }
 }
