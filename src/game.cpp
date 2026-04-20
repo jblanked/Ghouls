@@ -79,6 +79,25 @@ const Vector GhoulsGame::wallPositions[MAP_OUTER_WALLS] = {
     Vector( 0.5f, 24.0f),  // 2: left vertical
     Vector(95.5f, 24.0f),  // 3: right vertical
 };
+
+// WALL_SEGMENT_SIZE=8 → 12 h-segments per row, 6 v-segments per column
+// Indices 0–23: horizontal (top then bottom); 24–35: vertical (left then right)
+const Vector GhoulsGame::wallSegmentPositions[WALL_SEGMENT_COUNT] = {
+    // top wall (y=0.5)
+    Vector( 4.0f,  0.5f), Vector(12.0f,  0.5f), Vector(20.0f,  0.5f), Vector(28.0f,  0.5f),
+    Vector(36.0f,  0.5f), Vector(44.0f,  0.5f), Vector(52.0f,  0.5f), Vector(60.0f,  0.5f),
+    Vector(68.0f,  0.5f), Vector(76.0f,  0.5f), Vector(84.0f,  0.5f), Vector(92.0f,  0.5f),
+    // bottom wall (y=47.5)
+    Vector( 4.0f, 47.5f), Vector(12.0f, 47.5f), Vector(20.0f, 47.5f), Vector(28.0f, 47.5f),
+    Vector(36.0f, 47.5f), Vector(44.0f, 47.5f), Vector(52.0f, 47.5f), Vector(60.0f, 47.5f),
+    Vector(68.0f, 47.5f), Vector(76.0f, 47.5f), Vector(84.0f, 47.5f), Vector(92.0f, 47.5f),
+    // left wall (x=0.5)
+    Vector( 0.5f,  4.0f), Vector( 0.5f, 12.0f), Vector( 0.5f, 20.0f),
+    Vector( 0.5f, 28.0f), Vector( 0.5f, 36.0f), Vector( 0.5f, 44.0f),
+    // right wall (x=95.5)
+    Vector(95.5f,  4.0f), Vector(95.5f, 12.0f), Vector(95.5f, 20.0f),
+    Vector(95.5f, 28.0f), Vector(95.5f, 36.0f), Vector(95.5f, 44.0f),
+};
 // clang-format on
 
 GhoulsGame::GhoulsGame(const char *username, const char *password, bool soundEnabled)
@@ -398,11 +417,11 @@ bool GhoulsGame::initializeSprites()
     }
     wallSprite->setPosition(Vector(0, 0));
     wallSprite->setRotation(0.0f);
-    wallSprite->createWall(0, 0.75f, 0, MAP_WIDTH, MAP_WALL_HEIGHT, MAP_WALL_DEPTH);
+    wallSprite->createWall(0, 0.75f, 0, 8.0f, MAP_WALL_HEIGHT, MAP_WALL_DEPTH);
     wallSprite->setActive(true);
     wallSprite->setWireframe(WIREFRAME_ENABLED);
 
-    // vertical wall (left/right borders: len = MAP_HEIGHT, rotation = π/2)
+    // vertical wall (left/right borders: segment width = 8, rotation = π/2)
     vWallSprite = ENGINE_MEM_NEW Sprite3D();
     if (!vWallSprite)
     {
@@ -411,7 +430,7 @@ bool GhoulsGame::initializeSprites()
     }
     vWallSprite->setPosition(Vector(0, 0));
     vWallSprite->setRotation((float)(M_PI / 2.0));
-    vWallSprite->createWall(0, 0.75f, 0, MAP_HEIGHT, MAP_WALL_HEIGHT, MAP_WALL_DEPTH);
+    vWallSprite->createWall(0, 0.75f, 0, 8.0f, MAP_WALL_HEIGHT, MAP_WALL_DEPTH);
     vWallSprite->setActive(true);
     vWallSprite->setWireframe(WIREFRAME_ENABLED);
 
@@ -615,6 +634,8 @@ void GhoulsGame::renderEnvironment(Game *game)
         indices[j + 1] = keyIdx;
     }
 
+    renderWalls(game);
+
     // Render back-to-front
     for (int i = 0; i < count; i++)
     {
@@ -646,15 +667,15 @@ void GhoulsGame::renderWalls(Game *game)
         ENGINE_LOG_INFO("[GhoulsGame:renderWalls] Current level instance is null");
         return;
     }
-    for (int8_t i = MAP_OUTER_WALLS - 1; i >= 0; i--)
+
+    for (int i = 0; i < WALL_SEGMENT_COUNT; i++)
     {
-        const Vector &pos = wallPositions[i];
+        const Vector &pos = wallSegmentPositions[i];
         float dx = pos.x - player->position.x;
         float dy = pos.y - player->position.y;
         if (dx * dx + dy * dy > (float)(FIELD_OF_VIEW_SQUARED))
             continue;
-        // indices 0,1 = horizontal (top/bottom); indices 2,3 = vertical (left/right)
-        Sprite3D *sprite = (i < 2) ? wallSprite : vWallSprite;
+        Sprite3D *sprite = (i < WALL_H_SEGMENT_COUNT) ? wallSprite : vWallSprite;
         sprite->setPosition(pos);
         currentLevel->render3DSprite(sprite, draw, player->position, player->direction, game->camera->height);
     }

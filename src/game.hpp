@@ -23,9 +23,10 @@ private:
     Sprite3D *wallSprite = nullptr;          // Static Sprite3D instance for horizontal walls (top/bottom borders)
     Sprite3D *vWallSprite = nullptr;         // Static Sprite3D instance for vertical walls (left/right borders)
     //
-    static const Vector housePositions[HOUSE_SPAWN_COUNT]; // pre-computed house spawn positions (scaled)
-    static const Vector treePositions[TREE_SPAWN_COUNT];   // pre-computed tree spawn positions (scaled)
-    static const Vector wallPositions[MAP_OUTER_WALLS];    // pre-computed wall center positions
+    static const Vector housePositions[HOUSE_SPAWN_COUNT];        // pre-computed house spawn positions (scaled)
+    static const Vector treePositions[TREE_SPAWN_COUNT];          // pre-computed tree spawn positions (scaled)
+    static const Vector wallPositions[MAP_OUTER_WALLS];           // pre-computed wall center positions (for collision)
+    static const Vector wallSegmentPositions[WALL_SEGMENT_COUNT]; // pre-computed wall segment positions (for rendering)
     //
     int atoi(const char *nptr) { return (int)strtol(nptr, NULL, 10); } // convert string to integer
     Vector getRandomGhoulPosition(Level *level);                       // get a random position for spawning ghouls
