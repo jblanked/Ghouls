@@ -120,6 +120,17 @@ GhoulsGame::GhoulsGame(const char *username, const char *password, bool soundEna
         player = nullptr;
         return;
     }
+
+    sky = ENGINE_MEM_NEW Sky(SKY_SUNNY);
+    if (!sky)
+    {
+        ENGINE_LOG_INFO("[GhoulsGame:GhoulsGame] Failed to create Sky instance");
+        ENGINE_MEM_DELETE player;
+        player = nullptr;
+        ENGINE_MEM_DELETE gameTime;
+        gameTime = nullptr;
+        return;
+    }
 }
 
 GhoulsGame::~GhoulsGame()
@@ -140,6 +151,11 @@ GhoulsGame::~GhoulsGame()
     {
         ENGINE_MEM_DELETE gameTime;
         gameTime = nullptr;
+    }
+    if (sky)
+    {
+        ENGINE_MEM_DELETE sky;
+        sky = nullptr;
     }
     if (currentDynamicMap)
     {
@@ -634,6 +650,8 @@ void GhoulsGame::renderEnvironment(Game *game)
         indices[j + 1] = keyIdx;
     }
 
+    sky->render(draw);
+
     renderWalls(game);
 
     // Render back-to-front
@@ -889,6 +907,7 @@ bool GhoulsGame::startGameOnline()
 void GhoulsGame::updateDraw()
 {
     gameTime->tick();
+    sky->tick();
 
     /*
     During the day:
@@ -909,6 +928,7 @@ void GhoulsGame::updateDraw()
             // to see the ghouls walking back to their spawns
             makeGhoulsGoHome();
             // we could set sky n stuff here too
+            sky->setSkyType(SKY_SUNNY);
             player->showAlert("You survived the night.. for now");
         }
     }
@@ -934,6 +954,7 @@ void GhoulsGame::updateDraw()
             // make ghouls attack player
             makeGhoulsGoToPlayer();
             // we could set sky n stuff here too
+            sky->setSkyType(SKY_DARK);
             currentRound++;  // Increment round (for next night)
             refreshPlayer(); // refresh player state to update weapon and health displays after day ends
             player->showAlert("The ghouls are coming...");
