@@ -4,7 +4,9 @@
 #define FIELD_OF_VIEW 30 // see up to 30 around us
 #define FIELD_OF_VIEW_SQUARED 900
 
+#ifndef TICKS_PER_DAY
 #define TICKS_PER_DAY 3600 // 60 seconds at 60fps
+#endif
 
 #define MAP_WIDTH 96
 #define MAP_HEIGHT 48
