@@ -633,56 +633,6 @@ void GhoulsGame::renderEnvironment(Game *game)
     }
 }
 
-void GhoulsGame::renderHouses(Game *game)
-{
-    if (!houseSprite)
-    {
-        ENGINE_LOG_INFO("[GhoulsGame:renderHouses] House sprite is not initialized");
-        return;
-    }
-    Level *currentLevel = game->current_level;
-    if (!currentLevel)
-    {
-        ENGINE_LOG_INFO("[GhoulsGame:renderHouses] Current level instance is null");
-        return;
-    }
-    for (int8_t i = HOUSE_SPAWN_COUNT - 1; i >= 0; i--)
-    {
-        const Vector &pos = housePositions[i];
-        float dx = pos.x - player->position.x;
-        float dy = pos.y - player->position.y;
-        if (dx * dx + dy * dy > (float)(FIELD_OF_VIEW_SQUARED))
-            continue;
-        houseSprite->setPosition(pos);
-        currentLevel->render3DSprite(houseSprite, draw, player->position, player->direction, game->camera->height);
-    }
-}
-
-void GhoulsGame::renderTrees(Game *game)
-{
-    if (!treeSprite)
-    {
-        ENGINE_LOG_INFO("[GhoulsGame:renderTrees] Tree sprite is not initialized");
-        return;
-    }
-    Level *currentLevel = game->current_level;
-    if (!currentLevel)
-    {
-        ENGINE_LOG_INFO("[GhoulsGame:renderTrees] Current level instance is null");
-        return;
-    }
-    for (int8_t i = TREE_SPAWN_COUNT - 1; i >= 0; i--)
-    {
-        const Vector &pos = treePositions[i];
-        float dx = pos.x - player->position.x;
-        float dy = pos.y - player->position.y;
-        if (dx * dx + dy * dy > (float)(FIELD_OF_VIEW_SQUARED))
-            continue;
-        treeSprite->setPosition(pos);
-        currentLevel->render3DSprite(treeSprite, draw, player->position, player->direction, game->camera->height);
-    }
-}
-
 void GhoulsGame::renderWalls(Game *game)
 {
     if (!wallSprite || !vWallSprite)
