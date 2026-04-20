@@ -1,6 +1,6 @@
 #include "sky.hpp"
 
-Sky::Sky(SkyType type) : type(type)
+Sky::Sky(SkyType type) : time(0), type(type)
 {
 }
 
