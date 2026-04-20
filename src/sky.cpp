@@ -25,9 +25,8 @@ void Sky::drawGradientSky(Draw *draw,
         uint16_t color = makeRGB565(r >> 8, g >> 8, b >> 8);
 
         // Draw SKY_HORIZON_ROWS rows with the same color
-        int yEnd = (y + SKY_HORIZON_ROWS < SKY_HORIZON_HEIGHT) ? y + SKY_HORIZON_ROWS : SKY_HORIZON_HEIGHT;
-        for (int row = y; row < yEnd; row++)
-            draw->line(0, row, ENGINE_LCD_WIDTH - 1, row, color);
+        int height = (y + SKY_HORIZON_ROWS < SKY_HORIZON_HEIGHT) ? SKY_HORIZON_ROWS : SKY_HORIZON_HEIGHT - y;
+        draw->fillRectangle(0, y, ENGINE_LCD_WIDTH, height, color);
 
         r += drdy * SKY_HORIZON_ROWS;
         g += dgdy * SKY_HORIZON_ROWS;
