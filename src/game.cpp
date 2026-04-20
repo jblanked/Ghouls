@@ -413,7 +413,7 @@ bool GhoulsGame::initializeSprites()
         ENGINE_LOG_INFO("[GhoulsGame:initializeSprites] Failed to create Sprite3D instance for house sprite");
         return false;
     }
-    houseSprite->initializeAsHouse(Vector(), 3.0f, 3.0f, 0.0f, 0x0000, WIREFRAME_ENABLED);
+    houseSprite->initializeAsHouse(Vector(), 3.0f, 3.0f, 0.0f, 0xa0a1, WIREFRAME_ENABLED);
 
     // tree
     treeSprite = ENGINE_MEM_NEW Sprite3D();
@@ -422,7 +422,7 @@ bool GhoulsGame::initializeSprites()
         ENGINE_LOG_INFO("[GhoulsGame:initializeSprites] Failed to create Sprite3D instance for tree sprite");
         return false;
     }
-    treeSprite->initializeAsTree(Vector(), 4.0f, 0x0000, WIREFRAME_ENABLED);
+    treeSprite->initializeAsTree(Vector(), 4.0f, 0x13e2, WIREFRAME_ENABLED);
 
     // horizontal wall (top/bottom borders: len = MAP_WIDTH, rotation = 0)
     wallSprite = ENGINE_MEM_NEW Sprite3D();
