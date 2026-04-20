@@ -563,11 +563,73 @@ bool GhoulsGame::removeGhoulsFromLevel()
 
 void GhoulsGame::renderEnvironment(Game *game)
 {
-    if (game)
+    if (!game || !houseSprite || !treeSprite)
+        return;
+    Level *currentLevel = game->current_level;
+    if (!currentLevel)
+        return;
+
+    float dists[HOUSE_SPAWN_COUNT + TREE_SPAWN_COUNT];
+    uint8_t indices[HOUSE_SPAWN_COUNT + TREE_SPAWN_COUNT];
+    int count = 0;
+
+    for (int8_t i = 0; i < HOUSE_SPAWN_COUNT; i++)
     {
-        // renderWalls(game);
-        renderHouses(game);
-        renderTrees(game);
+        const Vector &pos = housePositions[i];
+        float dx = pos.x - player->position.x;
+        float dy = pos.y - player->position.y;
+        float d2 = dx * dx + dy * dy;
+        if (d2 > (float)(FIELD_OF_VIEW_SQUARED))
+            continue;
+        dists[count] = d2;
+        indices[count] = i; // 0–5 = houses
+        count++;
+    }
+
+    for (int8_t i = 0; i < TREE_SPAWN_COUNT; i++)
+    {
+        const Vector &pos = treePositions[i];
+        float dx = pos.x - player->position.x;
+        float dy = pos.y - player->position.y;
+        float d2 = dx * dx + dy * dy;
+        if (d2 > (float)(FIELD_OF_VIEW_SQUARED))
+            continue;
+        dists[count] = d2;
+        indices[count] = HOUSE_SPAWN_COUNT + i; // 6–59 = trees
+        count++;
+    }
+
+    // Insertion sort: furthest first (descending dist)
+    for (int i = 1; i < count; i++)
+    {
+        float keyDist = dists[i];
+        uint8_t keyIdx = indices[i];
+        int j = i - 1;
+        while (j >= 0 && dists[j] < keyDist)
+        {
+            dists[j + 1] = dists[j];
+            indices[j + 1] = indices[j];
+            j--;
+        }
+        dists[j + 1] = keyDist;
+        indices[j + 1] = keyIdx;
+    }
+
+    // Render back-to-front
+    for (int i = 0; i < count; i++)
+    {
+        uint8_t idx = indices[i];
+        if (idx < HOUSE_SPAWN_COUNT)
+        {
+            houseSprite->setPosition(housePositions[idx]);
+            currentLevel->render3DSprite(houseSprite, draw, player->position, player->direction, game->camera->height);
+        }
+        else
+        {
+            uint8_t treeIdx = idx - HOUSE_SPAWN_COUNT;
+            treeSprite->setPosition(treePositions[treeIdx]);
+            currentLevel->render3DSprite(treeSprite, draw, player->position, player->direction, game->camera->height);
+        }
     }
 }
 
