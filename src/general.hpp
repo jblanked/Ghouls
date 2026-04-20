@@ -1,6 +1,10 @@
 #pragma once
 #include "config.hpp"
 
+#define SKY_HORIZON_HEIGHT (ENGINE_LCD_HEIGHT / 2)
+#define SKY_HORIZON_ROWS 4
+#define FIXED_POINT_SCALE 256
+
 #define FIELD_OF_VIEW 30 // see up to 30 around us
 #define FIELD_OF_VIEW_SQUARED 900
 
@@ -11,7 +15,7 @@
 #define MAP_WIDTH 96
 #define MAP_HEIGHT 48
 
-#define MAP_WALL_HEIGHT 1.0f
+#define MAP_WALL_HEIGHT 3.0f
 #define MAP_WALL_DEPTH 0.2f
 
 #define MAP_OUTER_WALLS 4
