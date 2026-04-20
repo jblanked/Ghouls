@@ -1074,6 +1074,7 @@ void Player::drawUserInfoView(Draw *canvas)
     switch (userInfoStatus)
     {
     case UserInfoWaiting:
+        canvas->fillScreen(0xFFFF);
         if (!loadingStarted)
         {
             if (!loading)
