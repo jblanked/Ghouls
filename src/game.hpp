@@ -4,7 +4,10 @@
 #include "general.hpp"
 #include "player.hpp"
 #include "time.hpp"
+
+#if SKY_RENDER_ALLOWED
 #include "sky.hpp"
+#endif
 
 class GhoulsGame
 {
@@ -20,10 +23,12 @@ private:
     int lastInput = -1;                      // Last input key pressed
     Player *player = nullptr;                // Player instance
     bool shouldExit = false;                 // Flag to signal exit the game
-    Sky *sky = nullptr;                      // Sky instance for day/night cycle
-    Sprite3D *treeSprite = nullptr;          // Static Sprite3D instance for trees
-    Sprite3D *wallSprite = nullptr;          // Static Sprite3D instance for horizontal walls (top/bottom borders)
-    Sprite3D *vWallSprite = nullptr;         // Static Sprite3D instance for vertical walls (left/right borders)
+#if SKY_RENDER_ALLOWED
+    Sky *sky = nullptr; // Sky instance for day/night cycle
+#endif
+    Sprite3D *treeSprite = nullptr;  // Static Sprite3D instance for trees
+    Sprite3D *wallSprite = nullptr;  // Static Sprite3D instance for horizontal walls (top/bottom borders)
+    Sprite3D *vWallSprite = nullptr; // Static Sprite3D instance for vertical walls (left/right borders)
     //
     static const Vector housePositions[HOUSE_SPAWN_COUNT];        // pre-computed house spawn positions (scaled)
     static const Vector treePositions[TREE_SPAWN_COUNT];          // pre-computed tree spawn positions (scaled)

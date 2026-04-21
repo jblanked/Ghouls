@@ -2,6 +2,10 @@
 #include "config.hpp"
 #include ENGINE_LCD_INCLUDE
 
+#ifndef SKY_RENDER_ALLOWED
+#define SKY_RENDER_ALLOWED 1
+#endif
+
 #define SKY_HORIZON_HEIGHT (ENGINE_LCD_HEIGHT / 2)
 #define SKY_HORIZON_ROWS 4
 #define FIXED_POINT_SCALE 256

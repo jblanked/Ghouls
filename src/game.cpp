@@ -121,6 +121,7 @@ GhoulsGame::GhoulsGame(const char *username, const char *password, bool soundEna
         return;
     }
 
+#if SKY_RENDER_ALLOWED
     sky = ENGINE_MEM_NEW Sky(SKY_SUNNY);
     if (!sky)
     {
@@ -131,6 +132,7 @@ GhoulsGame::GhoulsGame(const char *username, const char *password, bool soundEna
         gameTime = nullptr;
         return;
     }
+#endif
 }
 
 GhoulsGame::~GhoulsGame()
@@ -152,11 +154,13 @@ GhoulsGame::~GhoulsGame()
         ENGINE_MEM_DELETE gameTime;
         gameTime = nullptr;
     }
+#if SKY_RENDER_ALLOWED
     if (sky)
     {
         ENGINE_MEM_DELETE sky;
         sky = nullptr;
     }
+#endif
     if (currentDynamicMap)
     {
         ENGINE_MEM_DELETE currentDynamicMap;
@@ -650,7 +654,9 @@ void GhoulsGame::renderEnvironment(Game *game)
         indices[j + 1] = keyIdx;
     }
 
+#if SKY_RENDER_ALLOWED
     sky->render(draw);
+#endif
 
     renderWalls(game);
 
@@ -907,7 +913,10 @@ bool GhoulsGame::startGameOnline()
 void GhoulsGame::updateDraw()
 {
     gameTime->tick();
+
+#if SKY_RENDER_ALLOWED
     sky->tick();
+#endif
 
     /*
     During the day:
@@ -927,8 +936,9 @@ void GhoulsGame::updateDraw()
             // im not deleting here since I want the player
             // to see the ghouls walking back to their spawns
             makeGhoulsGoHome();
-            // we could set sky n stuff here too
+#if SKY_RENDER_ALLOWED
             sky->setSkyType(SKY_SUNNY);
+#endif
             player->showAlert("You survived the night.. for now");
         }
     }
@@ -953,8 +963,9 @@ void GhoulsGame::updateDraw()
             increaseDifficulty();
             // make ghouls attack player
             makeGhoulsGoToPlayer();
-            // we could set sky n stuff here too
+#if SKY_RENDER_ALLOWED
             sky->setSkyType(SKY_DARK);
+#endif
             currentRound++;  // Increment round (for next night)
             refreshPlayer(); // refresh player state to update weapon and health displays after day ends
             player->showAlert("The ghouls are coming...");
