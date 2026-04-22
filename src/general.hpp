@@ -20,8 +20,10 @@
 #define GROUND_HORIZON_HEIGHT (ENGINE_LCD_HEIGHT / 2)
 #define GROUND_ROWS 4
 
+#ifndef FIELD_OF_VIEW
 #define FIELD_OF_VIEW 30 // see up to 30 around us
 #define FIELD_OF_VIEW_SQUARED 900
+#endif
 
 #ifndef TICKS_PER_DAY
 #define TICKS_PER_DAY 3600 // 60 seconds at 60fps
