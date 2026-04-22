@@ -321,6 +321,7 @@ void GhoulsLevel::render(Game *game)
 {
     Camera *gameCamera = game->getCamera();
     Player *player = ghoulsGame->getPlayer();
+    Vector ss = game->draw->getDisplaySize();
 
     // get third-person camera position
     if (gameCamera->perspective == CAMERA_THIRD_PERSON)
@@ -438,6 +439,8 @@ void GhoulsLevel::render(Game *game)
         indices[j + 1] = keyIdx;
     }
 
+    char healthstr[16];
+
     // Render back-to-front
     for (int i = 0; i < count; i++)
     {
@@ -484,26 +487,37 @@ void GhoulsLevel::render(Game *game)
             {
                 if (gameCamera->perspective == CAMERA_FIRST_PERSON)
                 {
-                    if (ent->is_player)
-                    {
-                        render3DSprite(ent->sprite_3d, game->draw, ent->position, ent->direction, gameCamera->height);
-                    }
-                    else
-                    {
-                        for (int j = 0; j < getEntityCount(); j++)
-                        {
-                            Entity *p = getEntity(j);
-                            if (p && p->is_player)
-                            {
-                                render3DSprite(ent->sprite_3d, game->draw, p->position, p->direction, gameCamera->height);
-                                break;
-                            }
-                        }
-                    }
+                    render3DSprite(ent->sprite_3d, game->draw, player->position, player->direction, gameCamera->height);
                 }
                 else // CAMERA_THIRD_PERSON
                 {
                     render3DSprite(ent->sprite_3d, game->draw, camPos, camDir, gameCamera->height);
+                }
+
+                if (ent->type == ENTITY_ENEMY)
+                {
+                    // Project the head (world y = 2.2) to screen coords
+                    float wdx = ent->position.x - gameCamera->position.x;
+                    float wdz = ent->position.y - gameCamera->position.y; // position.y = world Z
+                    float wdy = 2.2f - gameCamera->height;
+
+                    float cx = wdx * (-gameCamera->direction.y) + wdz * gameCamera->direction.x;
+                    float cz = wdx * gameCamera->direction.x + wdz * gameCamera->direction.y;
+                    if (cz <= 0.1f)
+                        continue; // behind camera
+
+                    float sx = (cx / cz) * ss.y + ss.x * 0.5f;
+                    float sy = (-wdy / cz) * ss.y + ss.y * 0.5f;
+                    if (sx < 0 || sx >= ss.x || sy < 2 || sy >= ss.y - 2)
+                        continue;
+
+                    snprintf(healthstr, sizeof(healthstr), "%d/%d", (uint16_t)ent->health, (uint16_t)ent->max_health);
+                    int tx = (int)sx - (int)(strlen(healthstr) * 3);
+                    int ty = (int)sy;
+                    if (tx < 0)
+                        tx = 0;
+                    game->draw->setFont(FONT_SIZE_SMALL);
+                    game->draw->text(tx, ty, healthstr, ENEMY_MINIMAP_COLOR);
                 }
             }
         }
