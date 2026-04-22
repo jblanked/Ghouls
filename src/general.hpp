@@ -33,6 +33,8 @@
 #define TICKS_PER_DAY 3600 // 60 seconds at 60fps
 #endif
 
+#define SPEED_SCALE(s) ((s) * (3600.0f / TICKS_PER_DAY))
+
 #define MAP_WIDTH 96
 #define MAP_HEIGHT 48
 
