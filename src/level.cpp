@@ -6,10 +6,6 @@
 #include "pico-game-engine/engine/sprite3d.hpp"
 #include <math.h>
 
-#if SKY_RENDER_ALLOWED
-#include "sky.hpp"
-#endif
-
 // clang-format off
 const Vector GhoulsLevel::housePositions[HOUSE_SPAWN_COUNT] = {
     Vector(12,  8),  // 0
@@ -128,6 +124,14 @@ GhoulsLevel::GhoulsLevel(const char *name, const Vector &size, Game *game, Ghoul
         return;
     }
 #endif
+#if GROUND_RENDER_ALLOWED
+    ground = ENGINE_MEM_NEW Ground(GROUND_DIRT);
+    if (!ground)
+    {
+        ENGINE_LOG_INFO("[GhoulsGame:GhoulsGame] Failed to create Ground instance");
+        return;
+    }
+#endif
 }
 
 GhoulsLevel::~GhoulsLevel()
@@ -147,6 +151,13 @@ GhoulsLevel::~GhoulsLevel()
     {
         ENGINE_MEM_DELETE sky;
         sky = nullptr;
+    }
+#endif
+#if GROUND_RENDER_ALLOWED
+    if (ground)
+    {
+        ENGINE_MEM_DELETE ground;
+        ground = nullptr;
     }
 #endif
     if (wallSprite)
@@ -343,6 +354,12 @@ void GhoulsLevel::render(Game *game)
 #if SKY_RENDER_ALLOWED
     if (renderEnv && sky)
         sky->render(game->draw);
+#endif
+
+    // ground
+#if GROUND_RENDER_ALLOWED
+    if (renderEnv && ground)
+        ground->render(game->draw);
 #endif
 
     // build combined render list
@@ -591,6 +608,10 @@ void GhoulsLevel::update(Game *game)
 {
 #if SKY_RENDER_ALLOWED
     sky->tick();
+#endif
+
+#if GROUND_RENDER_ALLOWED
+    ground->tick();
 #endif
 
     for (int i = 0; i < getEntityCount(); i++)

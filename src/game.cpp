@@ -231,6 +231,16 @@ bool GhoulsGame::initDraw()
     return true;
 }
 
+bool GhoulsGame::isDay() const
+{
+    if (!gameTime)
+    {
+        ENGINE_LOG_INFO("[GhoulsGame:isDay] Game time instance is null");
+        return true; // default to day
+    }
+    return gameTime->getTimeOfDay() == TIME_DAY;
+}
+
 void GhoulsGame::inputManager()
 {
     // Pass input to player for processing
@@ -325,6 +335,26 @@ bool GhoulsGame::removeGhoulsFromLevel()
     }
     return true;
 }
+
+#if GROUND_RENDER_ALLOWED
+bool GhoulsGame::setGroundType(GroundType groundType)
+{
+    GhoulsLevel *level = getCurrentLevel();
+    if (!level)
+    {
+        ENGINE_LOG_INFO("[GhoulsGame:setGroundType] Current level instance is null");
+        return false;
+    }
+    Ground *ground = level->getGround();
+    if (!ground)
+    {
+        ENGINE_LOG_INFO("[GhoulsGame:setGroundType] Ground instance is null");
+        return false;
+    }
+    ground->setGroundType(groundType);
+    return true;
+}
+#endif
 
 #if SKY_RENDER_ALLOWED
 bool GhoulsGame::setSkyType(SkyType skyType)
@@ -534,7 +564,7 @@ void GhoulsGame::updateDraw()
         - ghouls target player (makeGhoulsGoToPlayer)
     */
 
-    if (gameTime->getTimeOfDay() == TIME_DAY)
+    if (isDay())
     {
         if (!dayJustSwitched)
         {
@@ -544,6 +574,9 @@ void GhoulsGame::updateDraw()
             makeGhoulsGoHome();
 #if SKY_RENDER_ALLOWED
             setSkyType(SKY_SUNNY);
+#endif
+#if GROUND_RENDER_ALLOWED
+            setGroundType(GROUND_DIRT);
 #endif
             player->showAlert("You survived the night.. for now");
         }
@@ -571,6 +604,9 @@ void GhoulsGame::updateDraw()
             makeGhoulsGoToPlayer();
 #if SKY_RENDER_ALLOWED
             setSkyType(SKY_DARK);
+#endif
+#if GROUND_RENDER_ALLOWED
+            setGroundType(GROUND_DARK);
 #endif
             currentRound++;  // Increment round (for next night)
             refreshPlayer(); // refresh player state to update weapon and health displays after day ends

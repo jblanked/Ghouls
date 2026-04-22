@@ -9,6 +9,10 @@
 #include "sky.hpp"
 #endif
 
+#if GROUND_RENDER_ALLOWED
+#include "ground.hpp"
+#endif
+
 class GhoulsLevel; // forward declaration
 
 class GhoulsGame
@@ -35,6 +39,10 @@ private:
     void refreshPlayer();                                              // refresh player state (e.g., health and weapon displays) after day/night switch
     bool removeGhoulsFromLevel();                                      // remove all ghouls from the level
 
+#if GROUND_RENDER_ALLOWED
+    bool setGroundType(GroundType groundType); // set the ground type for the current level
+#endif
+
 #if SKY_RENDER_ALLOWED
     bool setSkyType(SkyType skyType); // set the sky instance for day/night cycle
 #endif
@@ -58,6 +66,7 @@ public:
     Player *getPlayer() const { return player; }          // Get the player instance
     bool initDraw();                                      // Initialize the Draw instance (moved here for Flipper app; must call lcd_init_canvas first)
     bool isActive() const { return shouldExit == false; } // Check if the game is active
+    bool isDay() const;                                   // Check if it's currently day time in the game
     bool isRunning() const { return isGameRunning; }      // Check if the game engine is running
     void resetInput() { lastInput = -1; }                 // Reset input after processing
     bool startGame();                                     // start the actual game
