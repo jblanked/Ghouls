@@ -606,8 +606,15 @@ void GhoulsLevel::renderMiniMap(Draw *canvas)
                     color = ENEMY_MINIMAP_COLOR;
                     break;
                 case ENTITY_NPC:
+                {
                     color = WEAPON_MINIMAP_COLOR;
+                    Weapon *weapon = static_cast<Weapon *>(e);
+                    if (weapon && weapon->isHeld())
+                    {
+                        continue;
+                    }
                     break;
+                }
                 default:
                     break;
                 }
