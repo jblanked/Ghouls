@@ -86,7 +86,6 @@ bool Weapon::fire(Level *level)
 {
     if (!level || !canFire() || currentProjectile)
     {
-        ENGINE_LOG_INFO("[Weapon:fire] Cannot fire weapon because level reference is null");
         return false;
     }
     // create and add projectile to level
@@ -214,12 +213,6 @@ void Weapon::makeRifle(float height)
 void Weapon::makeRocketLauncher(float height)
 {
     this->name = "Rocket Launcher";
-    sprite_3d = ENGINE_MEM_NEW Sprite3D();
-    if (!sprite_3d)
-        return;
-    sprite_3d->clearTriangles();
-    sprite_3d->setActive(true);
-
     const float s = height / 2.0f;
     const uint16_t tube = rgb565(0x4a5a3a);
     const uint16_t grip = rgb565(0x222222);
@@ -260,12 +253,6 @@ void Weapon::makeRocketLauncher(float height)
 void Weapon::makeShotgun(float height)
 {
     this->name = "Shotgun";
-    sprite_3d = ENGINE_MEM_NEW Sprite3D();
-    if (!sprite_3d)
-        return;
-    sprite_3d->clearTriangles();
-    sprite_3d->setActive(true);
-
     const float s = height / 2.0f;
     const uint16_t metal = rgb565(0x3a3a44);
     const uint16_t wood = rgb565(0x6b4a22);
