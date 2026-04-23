@@ -585,13 +585,31 @@ void GhoulsLevel::renderMiniMap(Draw *canvas)
     for (int i = 0; i < getEntityCount(); i++)
     {
         Entity *e = getEntity(i);
-        if (e && (e->type == ENTITY_PLAYER || e->type == ENTITY_ENEMY))
+        if (!e)
+            continue;
+        const EntityType type = (e) ? e->type : ENTITY_ICON;
+        if (type == ENTITY_PLAYER || type == ENTITY_ENEMY || type == ENTITY_NPC)
         {
             if (e->position.x >= 0 && e->position.y >= 0)
             {
                 uint16_t ppx = (uint16_t)(mapPosition.x + e->position.x * scale_x);
                 uint16_t ppy = (uint16_t)(mapPosition.y + e->position.y * scale_y);
-                uint16_t color = (e->type == ENTITY_PLAYER) ? PLAYER_MINIMAP_COLOR : ENEMY_MINIMAP_COLOR;
+                uint16_t color = 0x0000;
+
+                switch (type)
+                {
+                case ENTITY_PLAYER:
+                    color = PLAYER_MINIMAP_COLOR;
+                    break;
+                case ENTITY_ENEMY:
+                    color = ENEMY_MINIMAP_COLOR;
+                    break;
+                case ENTITY_NPC:
+                    color = WEAPON_MINIMAP_COLOR;
+                    break;
+                default:
+                    break;
+                }
 
                 // 3x3 white square so the dot is visible over walls
                 canvas->fillRectangle(ppx - 1, ppy - 1, 3, 3, 0xFFFF);
@@ -599,16 +617,23 @@ void GhoulsLevel::renderMiniMap(Draw *canvas)
                 // Direction arrow: line from centre out 4px in facing direction
                 if (e->direction.x != 0.0f || e->direction.y != 0.0f)
                 {
-                    uint16_t tip_x = ppx + (uint16_t)(e->direction.x * 4.0f);
-                    uint16_t tip_y = ppy + (uint16_t)(e->direction.y * 4.0f);
-                    canvas->line(ppx, ppy, tip_x, tip_y, color);
-                    // Arrowhead: two lines from tip back to flanking points
-                    uint16_t base_x = tip_x - (uint16_t)(e->direction.x * 2.0f);
-                    uint16_t base_y = tip_y - (uint16_t)(e->direction.y * 2.0f);
-                    uint16_t perp_x = (uint16_t)(e->direction.y * 2.0f);
-                    uint16_t perp_y = (uint16_t)(-e->direction.x * 2.0f);
-                    canvas->line(tip_x, tip_y, base_x + perp_x, base_y + perp_y, color);
-                    canvas->line(tip_x, tip_y, base_x - perp_x, base_y - perp_y, color);
+                    if (type != ENTITY_NPC)
+                    {
+                        uint16_t tip_x = ppx + (uint16_t)(e->direction.x * 4.0f);
+                        uint16_t tip_y = ppy + (uint16_t)(e->direction.y * 4.0f);
+                        canvas->line(ppx, ppy, tip_x, tip_y, color);
+                        // Arrowhead: two lines from tip back to flanking points
+                        uint16_t base_x = tip_x - (uint16_t)(e->direction.x * 2.0f);
+                        uint16_t base_y = tip_y - (uint16_t)(e->direction.y * 2.0f);
+                        uint16_t perp_x = (uint16_t)(e->direction.y * 2.0f);
+                        uint16_t perp_y = (uint16_t)(-e->direction.x * 2.0f);
+                        canvas->line(tip_x, tip_y, base_x + perp_x, base_y + perp_y, color);
+                        canvas->line(tip_x, tip_y, base_x - perp_x, base_y - perp_y, color);
+                    }
+                    else
+                    {
+                        canvas->circle(ppx, ppy, 2, color);
+                    }
                 }
 
                 // Centre dot on top
