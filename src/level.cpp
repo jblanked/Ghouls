@@ -462,6 +462,9 @@ void GhoulsLevel::render(Game *game)
         }
         else if (idx < RENDER_ENTITY_OFFSET)
         {
+#if (!WALL_RENDER_ALLOWED)
+            continue;
+#endif
             // Wall segment
             uint8_t wi = idx - RENDER_WALL_OFFSET;
             Sprite3D *wallSpr = (wi < WALL_H_SEGMENT_COUNT) ? wallSprite : vWallSprite;
