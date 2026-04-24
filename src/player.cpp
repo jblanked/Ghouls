@@ -1922,9 +1922,6 @@ void Player::update(Game *game)
     {
         return; // Don't update player position in menu or if dead
     }
-
-    float rotSpeed = SPEED_SCALE(0.1f); // Rotation speed in radians
-
     switch (game->input)
     {
     case INPUT_KEY_UP:
@@ -1935,12 +1932,10 @@ void Player::update(Game *game)
             return; // Invalid level type
         }
 
-        rotSpeed = SPEED_SCALE(1.0f);
-
         // Calculate new position
         Vector new_pos = Vector(
-            position.x + direction.x * rotSpeed,
-            position.y + direction.y * rotSpeed);
+            position.x + direction.x * PLAYER_SPEED_VERTICAL,
+            position.y + direction.y * PLAYER_SPEED_VERTICAL);
 
         // Check collision with dynamic map
         if (!currentLevel->collisionMapCheck(new_pos))
@@ -1980,12 +1975,10 @@ void Player::update(Game *game)
             return; // Invalid level type
         }
 
-        rotSpeed = SPEED_SCALE(1.0f);
-
         // Calculate new position
         Vector new_pos = Vector(
-            position.x - direction.x * rotSpeed,
-            position.y - direction.y * rotSpeed);
+            position.x - direction.x * PLAYER_SPEED_VERTICAL,
+            position.y - direction.y * PLAYER_SPEED_VERTICAL);
 
         // Check collision with dynamic map
         if (!currentLevel->collisionMapCheck(new_pos))
@@ -2022,10 +2015,10 @@ void Player::update(Game *game)
         float old_dir_x = direction.x;
         float old_plane_x = plane.x;
 
-        direction.x = direction.x * cos(-rotSpeed) - direction.y * sin(-rotSpeed);
-        direction.y = old_dir_x * sin(-rotSpeed) + direction.y * cos(-rotSpeed);
-        plane.x = plane.x * cos(-rotSpeed) - plane.y * sin(-rotSpeed);
-        plane.y = old_plane_x * sin(-rotSpeed) + plane.y * cos(-rotSpeed);
+        direction.x = direction.x * cos(-PLAYER_SPEED_VERTICAL) - direction.y * sin(-PLAYER_SPEED_VERTICAL);
+        direction.y = old_dir_x * sin(-PLAYER_SPEED_VERTICAL) + direction.y * cos(-PLAYER_SPEED_VERTICAL);
+        plane.x = plane.x * cos(-PLAYER_SPEED_VERTICAL) - plane.y * sin(-PLAYER_SPEED_VERTICAL);
+        plane.y = old_plane_x * sin(-PLAYER_SPEED_VERTICAL) + plane.y * cos(-PLAYER_SPEED_VERTICAL);
 
         // Update sprite rotation to match new camera direction
         if (has3DSprite())
@@ -2054,10 +2047,10 @@ void Player::update(Game *game)
         float old_dir_x = direction.x;
         float old_plane_x = plane.x;
 
-        direction.x = direction.x * cos(rotSpeed) - direction.y * sin(rotSpeed);
-        direction.y = old_dir_x * sin(rotSpeed) + direction.y * cos(rotSpeed);
-        plane.x = plane.x * cos(rotSpeed) - plane.y * sin(rotSpeed);
-        plane.y = old_plane_x * sin(rotSpeed) + plane.y * cos(rotSpeed);
+        direction.x = direction.x * cos(PLAYER_SPEED_VERTICAL) - direction.y * sin(PLAYER_SPEED_VERTICAL);
+        direction.y = old_dir_x * sin(PLAYER_SPEED_VERTICAL) + direction.y * cos(PLAYER_SPEED_VERTICAL);
+        plane.x = plane.x * cos(PLAYER_SPEED_VERTICAL) - plane.y * sin(PLAYER_SPEED_VERTICAL);
+        plane.y = old_plane_x * sin(PLAYER_SPEED_VERTICAL) + plane.y * cos(PLAYER_SPEED_VERTICAL);
 
         // Update sprite rotation to match new camera direction
         if (has3DSprite())
