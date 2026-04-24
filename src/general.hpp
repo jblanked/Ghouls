@@ -12,6 +12,10 @@
 #define PLAYER_SPEED_VERTICAL SPEED_SCALE(1.0f)
 #endif
 
+#ifndef MINIMAP_VIEW_RADIUS
+#define MINIMAP_VIEW_RADIUS 12.0f
+#endif
+
 #define PLAYER_MINIMAP_COLOR 0x297f
 #define WEAPON_MINIMAP_COLOR 0xfde0
 
@@ -99,11 +103,11 @@ typedef enum
 
 typedef enum
 {
-    MenuSettingsMain = 0,       // hovering over `Settings` in system menu
-    MenuSettingsSound = 1,      // sound on/off
-    MenuSettingsVibration = 2,  // vibration on/off
-    MenuSettingsShowPlayer = 3, // show/hide local player
-    MenuSettingsLeave = 4,      // leave game
+    MenuSettingsMain = 0,        // hovering over `Settings` in system menu
+    MenuSettingsSound = 1,       // sound on/off
+    MenuSettingsVibration = 2,   // vibration on/off
+    MenuSettingsShowMiniMap = 3, // show/hide minimap
+    MenuSettingsLeave = 4,       // leave game
 } MenuSettingsIndex;
 
 typedef enum
