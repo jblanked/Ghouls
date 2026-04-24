@@ -595,6 +595,7 @@ bool GhoulsGame::startGameOnline()
 void GhoulsGame::updateDraw()
 {
     gameTime->tick();
+    gameSound->tick();
 
     /*
     During the day:
