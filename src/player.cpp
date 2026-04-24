@@ -2015,10 +2015,13 @@ void Player::update(Game *game)
         float old_dir_x = direction.x;
         float old_plane_x = plane.x;
 
-        direction.x = direction.x * cos(-PLAYER_SPEED_HORIZONTAL) - direction.y * sin(-PLAYER_SPEED_HORIZONTAL);
-        direction.y = old_dir_x * sin(-PLAYER_SPEED_HORIZONTAL) + direction.y * cos(-PLAYER_SPEED_HORIZONTAL);
-        plane.x = plane.x * cos(-PLAYER_SPEED_HORIZONTAL) - plane.y * sin(-PLAYER_SPEED_HORIZONTAL);
-        plane.y = old_plane_x * sin(-PLAYER_SPEED_HORIZONTAL) + plane.y * cos(-PLAYER_SPEED_HORIZONTAL);
+        const float cos_horizontal = cosf(-PLAYER_SPEED_HORIZONTAL);
+        const float sin_horizontal = sinf(-PLAYER_SPEED_HORIZONTAL);
+
+        direction.x = direction.x * cos_horizontal - direction.y * sin_horizontal;
+        direction.y = old_dir_x * sin_horizontal + direction.y * cos_horizontal;
+        plane.x = plane.x * cos_horizontal - plane.y * sin_horizontal;
+        plane.y = old_plane_x * sin_horizontal + plane.y * cos_horizontal;
 
         // Update sprite rotation to match new camera direction
         if (has3DSprite())
@@ -2047,10 +2050,13 @@ void Player::update(Game *game)
         float old_dir_x = direction.x;
         float old_plane_x = plane.x;
 
-        direction.x = direction.x * cos(PLAYER_SPEED_HORIZONTAL) - direction.y * sin(PLAYER_SPEED_HORIZONTAL);
-        direction.y = old_dir_x * sin(PLAYER_SPEED_HORIZONTAL) + direction.y * cos(PLAYER_SPEED_HORIZONTAL);
-        plane.x = plane.x * cos(PLAYER_SPEED_HORIZONTAL) - plane.y * sin(PLAYER_SPEED_HORIZONTAL);
-        plane.y = old_plane_x * sin(PLAYER_SPEED_HORIZONTAL) + plane.y * cos(PLAYER_SPEED_HORIZONTAL);
+        const float cos_horizontal = cosf(PLAYER_SPEED_HORIZONTAL);
+        const float sin_horizontal = sinf(PLAYER_SPEED_HORIZONTAL);
+
+        direction.x = direction.x * cos_horizontal - direction.y * sin_horizontal;
+        direction.y = old_dir_x * sin_horizontal + direction.y * cos_horizontal;
+        plane.x = plane.x * cos_horizontal - plane.y * sin_horizontal;
+        plane.y = old_plane_x * sin_horizontal + plane.y * cos_horizontal;
 
         // Update sprite rotation to match new camera direction
         if (has3DSprite())
