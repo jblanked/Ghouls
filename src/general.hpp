@@ -2,6 +2,16 @@
 #include "config.hpp"
 #include ENGINE_LCD_INCLUDE
 
+#define SPEED_SCALE(s) ((s) * (3600.0f / TICKS_PER_DAY))
+
+#ifndef PLAYER_SPEED_HORIZONTAL
+#define PLAYER_SPEED_HORIZONTAL SPEED_SCALE(0.1f)
+#endif
+
+#ifndef PLAYER_SPEED_VERTICAL
+#define PLAYER_SPEED_VERTICAL SPEED_SCALE(1.0f)
+#endif
+
 #define PLAYER_MINIMAP_COLOR 0x297f
 #define WEAPON_MINIMAP_COLOR 0xfde0
 
@@ -37,8 +47,6 @@
 #ifndef TICKS_PER_DAY
 #define TICKS_PER_DAY 3600 // 60 seconds at 60fps
 #endif
-
-#define SPEED_SCALE(s) ((s) * (3600.0f / TICKS_PER_DAY))
 
 #define MAP_WIDTH 96
 #define MAP_HEIGHT 48
