@@ -26,7 +26,7 @@ Projectile::Projectile(ProjectileType type, float height, Vector position) : Ent
         break;
     case PROJECTILE_ROCKET:
         makeRocket(height);
-        speed = SPEED_SCALE(0.2f);
+        speed = SPEED_SCALE(0.3f);
         size = Vector(1.0f, height);
         break;
     case PROJECTILE_SHELL:
