@@ -274,6 +274,27 @@ bool GhoulsLevel::initializeSprites()
     return true;
 }
 
+bool GhoulsLevel::isPositionAvailable(Vector position)
+{
+    // check houses
+    for (uint8_t i = 0; i < HOUSE_SPAWN_COUNT; i++)
+    {
+        if (position == housePositions[i])
+        {
+            return false;
+        }
+    }
+    // check trees
+    for (uint8_t i = 0; i < TREE_SPAWN_COUNT; i++)
+    {
+        if (position == treePositions[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 void GhoulsLevel::registerSpritePositionsOnMap(DynamicMap *map)
 {
     // Houses: fill the full HOUSE_TILE_SIZE x HOUSE_TILE_SIZE footprint centered on spawn

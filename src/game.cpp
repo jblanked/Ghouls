@@ -331,6 +331,7 @@ void GhoulsGame::onGhoulDied()
 
 bool GhoulsGame::positionExistsInLevel(Level *level, Vector position)
 {
+    // check entities
     for (int i = 0; i < level->getEntityCount(); i++)
     {
         Entity *entity = level->getEntity(i);
@@ -339,7 +340,9 @@ bool GhoulsGame::positionExistsInLevel(Level *level, Vector position)
             return true;
         }
     }
-    return false;
+    // check trees/houses
+    GhoulsLevel *currentLevel = static_cast<GhoulsLevel *>(level);
+    return currentLevel && !currentLevel->isPositionAvailable(position);
 }
 
 void GhoulsGame::refreshPlayer()
