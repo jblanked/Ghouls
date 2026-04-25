@@ -121,7 +121,7 @@ Vector GhoulsGame::getRandomGhoulPosition(Level *level)
         Vector(20, 10),
         Vector(21, 3),
         Vector(21, 8),
-        Vector(22, 1),
+        Vector(22, 2),
         Vector(22, 3),
         Vector(22, 10),
     };
@@ -147,7 +147,7 @@ Vector GhoulsGame::getRandomWeaponPosition(Level *level)
         Vector(2, 9),
         Vector(3, 5),
         Vector(7, 6),
-        Vector(8, 1),
+        Vector(8, 2),
         Vector(9, 3),
         Vector(13, 5),
         Vector(13, 11),
