@@ -668,7 +668,7 @@ void GhoulsLevel::renderMiniatureMiniMap(Draw *canvas)
     const int sw = canvas->getDisplaySize().x;
 
     // Small square in the top-left corner
-    const int mmLen = sw * 34 / 128; // square side length in pixels
+    const int mmLen = sw * 30 / 128; // square side length in pixels
     const int mmX = sw * 2 / 128;    // left margin
     const int mmY = sw * 2 / 128;    // top margin
 
