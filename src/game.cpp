@@ -226,9 +226,12 @@ void GhoulsGame::increaseDifficulty()
         if (entity && entity->type == ENTITY_ENEMY)
         {
             Enemy *enemy = static_cast<Enemy *>(entity);
-            enemy->max_health += (ENEMY_HEALTH_INCREMENT * decrement); // increase max health based on current round
-            enemy->health = enemy->max_health;                         // restore health to max when stats are updated
-            enemy->strength += (ENEMY_STRENGTH_INCREMENT * decrement); // increase strength based on current round
+            if (enemy)
+            {
+                enemy->max_health += (ENEMY_HEALTH_INCREMENT * decrement); // increase max health based on current round
+                enemy->health = enemy->max_health;                         // restore health to max when stats are updated
+                enemy->strength += (ENEMY_STRENGTH_INCREMENT * decrement); // increase strength based on current round
+            }
         }
     }
 }
@@ -281,7 +284,10 @@ void GhoulsGame::makeGhoulsGoHome()
         if (entity && entity->type == ENTITY_ENEMY)
         {
             Enemy *enemy = static_cast<Enemy *>(entity);
-            enemy->state = ENTITY_MOVING_TO_START;
+            if (enemy)
+            {
+                enemy->state = ENTITY_MOVING_TO_START;
+            }
         }
     }
     ghoulCountCurrent = 0;
@@ -303,7 +309,10 @@ void GhoulsGame::makeGhoulsGoToPlayer()
         if (entity && entity->type == ENTITY_ENEMY)
         {
             Enemy *enemy = static_cast<Enemy *>(entity);
-            enemy->state = ENTITY_MOVING_TO_END;
+            if (enemy)
+            {
+                enemy->state = ENTITY_MOVING_TO_END;
+            }
         }
     }
 }
