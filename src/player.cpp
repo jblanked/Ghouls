@@ -155,6 +155,7 @@ void Player::drawGameLocalView(Draw *canvas)
             {
                 if (pendingStatsUpdate)
                 {
+                    ghoulsGame->getGameSound()->stop();
                     pendingStatsUpdate = false;
                     userRequest(RequestTypeUpdateStats);
                 }
