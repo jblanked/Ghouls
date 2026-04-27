@@ -328,6 +328,12 @@ void GhoulsGame::onGhoulDied()
     {
         spawnOneGhoul();
     }
+    if (ghoulCountCurrent == 0 && ghoulCountSpawned >= ghoulCountTotal)
+    {
+        ghoulCountSpawned = 0;
+        ghoulCountTotal = 0;
+        gameTime->setTimeOfDay(TIME_DAY);
+    }
 }
 
 bool GhoulsGame::positionExistsInLevel(Level *level, Vector position)
