@@ -1326,7 +1326,12 @@ bool Player::equipWeapon(Level *level, Weapon *weapon)
     {
         // drop weapon right behind us
         equippedWeapon->setHeld(false);
-        equippedWeapon->position_set(this->position.x - 4, this->position.y, this->position.z); // drop slightly behind player
+        {
+            equippedWeapon->position_set(
+                this->position.x - this->direction.x * 4.0f,
+                this->position.y - this->direction.y * 4.0f,
+                this->position.z);
+        }
         equippedWeapon->direction = this->direction;
         equippedWeapon->update3DSpritePosition();
         equippedWeapon = nullptr; // drop our reference
