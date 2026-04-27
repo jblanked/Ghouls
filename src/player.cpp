@@ -1169,7 +1169,8 @@ void Player::drawUserInfoView(Draw *canvas)
                 char *health = get_json_value("health", game_stats);
                 char *strength = get_json_value("strength", game_stats);
                 char *max_health = get_json_value("max_health", game_stats);
-                if (!username || !level || !xp || !health || !strength || !max_health)
+                char *health_regen = get_json_value("health_regen", game_stats);
+                if (!username || !level || !xp || !health || !strength || !max_health || !health_regen)
                 {
                     ENGINE_LOG_INFO("[Player:drawUserInfoView] Failed to parse user info");
                     userInfoStatus = UserInfoParseError;
@@ -1185,6 +1186,8 @@ void Player::drawUserInfoView(Draw *canvas)
                         ::ENGINE_MEM_FREE(strength);
                     if (max_health)
                         ::ENGINE_MEM_FREE(max_health);
+                    if (health_regen)
+                        ::ENGINE_MEM_FREE(health_regen);
                     ::ENGINE_MEM_FREE(game_stats);
                     if (loading)
                     {
@@ -1201,6 +1204,7 @@ void Player::drawUserInfoView(Draw *canvas)
                 this->health = atoi(health);
                 this->strength = atoi(strength);
                 this->max_health = atoi(max_health);
+                this->health_regen = atoi(health_regen);
 
                 // clean em up gang
                 ::ENGINE_MEM_FREE(username);
@@ -1209,6 +1213,7 @@ void Player::drawUserInfoView(Draw *canvas)
                 ::ENGINE_MEM_FREE(health);
                 ::ENGINE_MEM_FREE(strength);
                 ::ENGINE_MEM_FREE(max_health);
+                ::ENGINE_MEM_FREE(health_regen);
                 ::ENGINE_MEM_FREE(game_stats);
                 ::ENGINE_MEM_FREE(response);
 
@@ -2000,6 +2005,19 @@ void Player::update(Game *game)
     {
         return; // Don't update player position in menu or if dead
     }
+
+    // apply health regen
+    elapsed_health_regen += SPEED_SCALE(0.05f);
+    if (elapsed_health_regen >= 1 && health < max_health)
+    {
+        health += health_regen;
+        elapsed_health_regen = 0;
+        if (health > max_health)
+        {
+            health = max_health;
+        }
+    }
+
     switch (game->input)
     {
     case INPUT_KEY_UP:
