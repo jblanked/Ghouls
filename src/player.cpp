@@ -243,6 +243,14 @@ void Player::drawGameLocalView(Draw *canvas)
         {
             ghoulsGame->getEngine()->runAsync(false); // Run the game engine immediately
         }
+        else
+        {
+            canvas->fillScreen(0xFFFF);
+            canvas->setFont(FONT_SIZE_MEDIUM);
+            canvas->text(sw * 10 / 128, sh * 30 / 64, "Failed to start game!", 0x0000);
+            canvas->setFont(FONT_SIZE_SMALL);
+            canvas->text(sw * 10 / 128, sh * 50 / 64, "Press BACK to return.", 0x0000);
+        }
     }
 }
 
@@ -1427,17 +1435,15 @@ void Player::drawUserInfoView(Draw *canvas)
 
                 // no online right now
                 // just jump into a local game
-                // if (currentLobbyMenuIndex == LobbyMenuLocal)
-                // {
-                currentMainView = GameViewGameLocal; // Switch to local game view
-                ghoulsGame->startGame();
-                // }
-                // else if (currentLobbyMenuIndex == LobbyMenuOnline)
-                // {
-                //     lobbyFetched = false; // Reset so browser fetches fresh data
-                //     lobbySelectedIndex = 0;
-                //     currentMainView = GameViewLobbyBrowser; // Show lobby browser instead of creating directly
-                // }
+                if (ghoulsGame->startGame())
+                {
+                    currentMainView = GameViewGameLocal; // Switch to local game view
+                }
+                else
+                {
+                    ENGINE_LOG_INFO("[Player:drawUserInfoView] Failed to start the game\n");
+                    userInfoStatus = UserInfoRequestError;
+                }
                 return;
             }
             else
