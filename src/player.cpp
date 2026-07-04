@@ -123,23 +123,34 @@ void Player::collision(Entity *other, Game *game)
 }
 
 // clang-format off
-const char *Player::downloadFiles[16] = {
-    "ambience.wav",
-    "crossbow.wav",
+const char *Player::downloadFiles[27] = {
+    "weapon-pickup.wav",
+    "tron.ghoulsmap",
+    "shotgun.wav",
+    "shotgun.sprite3d",
+    "rocket.sprite3d",
+    "shell.sprite3d",
+    "rocket-launcher.wav",
+    "rocket-launcher.sprite3d",
+    "rifle.wav",
+    "rifle.sprite3d",
+    "punk.sprite3d",
+    "menu-click.wav",
+    "maze.ghoulsmap",
+    "home.ghoulsmap",
+    "graveyard.ghoulsmap",
+    "ghouls-growling.wav",
+    "ghouls-growl-soft.wav",
+    "ghouls-growl-medium.wav",
     "ghouls-growl-loud.wav",
     "forest.ghoulsmap",
-    "ghouls-growl-medium.wav",
-    "ghouls-growl-soft.wav",
-    "ghouls-growling.wav",
-    "graveyard.ghoulsmap",
-    "home.ghoulsmap",
-    "maze.ghoulsmap",
-    "menu-click.wav",
-    "rifle.wav",
-    "rocket-launcher.wav",
-    "shotgun.wav",
-    "tron.ghoulsmap",
-    "weapon-pickup.wav",
+    "crossbow.wav",
+    "crossbow.sprite3d",
+    "creeper.sprite3d",
+    "bully.sprite3d",
+    "bullet.sprite3d",
+    "arrow.sprite3d",
+    "ambience.wav"
 };
 // clang-format on
 
