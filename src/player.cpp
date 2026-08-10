@@ -2290,7 +2290,15 @@ void Player::update(Game *game)
         return;
     }
 
-    if (game->input == INPUT_KEY_BACK)
+    // per-player input (multiplayer server)
+    int input = gameplayInput;
+    gameplayInput = -1;
+    if (input == -1)
+    {
+        input = game->input;
+    }
+
+    if (input == INPUT_KEY_BACK)
     {
         gameState = gameState == GameStateMenu ? GameStatePlaying : GameStateMenu;
         game->input = -1;
@@ -2319,7 +2327,7 @@ void Player::update(Game *game)
         }
     }
 
-    switch (game->input)
+    switch (input)
     {
     case INPUT_KEY_UP:
     {
@@ -2563,6 +2571,27 @@ void Player::updateEntityFromServerLine(Level *currentLevel, const char *line)
     entity_name[nameLen] = '\0';
 
     p = comma + 1; // advance past first comma
+
+    // Time-of-day sync
+    if (strcmp(entity_name, "TIME") == 0)
+    {
+        if (ghoulsGame)
+        {
+            Time *gt = ghoulsGame->getGameTime();
+            if (gt)
+            {
+                if (*p == 'N' || *p == 'n')
+                {
+                    gt->setTimeOfDay(TIME_NIGHT);
+                }
+                else
+                {
+                    gt->setTimeOfDay(TIME_DAY);
+                }
+            }
+        }
+        return;
+    }
 
     // Check for removal marker: "name,R"
     if (*p == 'R' && (*(p + 1) == '\0' || *(p + 1) == '\n' || *(p + 1) == '\r'))

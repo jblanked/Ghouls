@@ -91,6 +91,7 @@ public:
     void render(Draw *canvas, Game *game) override;
     void setGhoulsGame(GhoulsGame *game) { ghoulsGame = game; }
     void setGameState(GameState state) { gameState = state; }
+    void setGameplayInput(int key) { gameplayInput = key; }
     void setInputKey(int key) { lastInput = key; }
     void setLeaveGameToggle(ToggleState state) { leaveGame = state; }
     void setLobbyMenuIndex(LobbyMenuIndex index) { currentLobbyMenuIndex = index; }
@@ -122,6 +123,7 @@ private:
     GhoulsGame *ghoulsGame = nullptr;                                       // Reference to the main game instance
     GameState gameState = GameStatePlaying;                                 // current game state
     int lastInput = -1;                                                     // Last input key
+    int gameplayInput = -1;                                                 // Per-player gameplay input (multiplayer server)
     ToggleState leaveGame = ToggleOff;                                      // leave game toggle state
     Loading *loading = nullptr;                                             // loading animation instance
     LoginStatus loginStatus = LoginNotStarted;                              // Current login status
