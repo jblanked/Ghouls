@@ -85,6 +85,8 @@ public:
     void handleMenu(Draw *canvas, Game *game);
     void increaseWeaponAmmo();
     void increaseXP(uint16_t amount);
+    void addPendingGhoulKill(const char *ghoulName); // record a local ghoul kill and notify the server
+    void clearPendingGhoulKills();                   // clear all pending ghoul kills
     void processInput();
     void render(Draw *canvas, Game *game) override;
     void setGhoulsGame(GhoulsGame *game) { ghoulsGame = game; }
@@ -128,6 +130,9 @@ private:
     uint16_t onlinePort = 0;                                                // WebSocket port assigned by the server
     static const uint32_t PREDICTION_RESYNC_TICKS = 5000;                   // prediction resync threshold in ticks
     uint32_t lastPredictionTick = 0;                                        // tick of last predicted input
+    static const uint8_t MAX_PENDING_GHOUL_KILLS = 8;                       // max locally-killed ghouls awaiting server confirm
+    char pendingGhoulKills[MAX_PENDING_GHOUL_KILLS][64] = {{0}};            // ghouls killed locally, pending server removal
+    uint8_t pendingGhoulKillCount = 0;                                      // count of pending ghoul kills
     bool pendingStatsUpdate = false;                                        // deferred stats update flag
     lobby_entry_t lobbyEntries[MAX_LOBBY_ENTRIES];                          // list of available online game sessions loaded for browsing/joining
     int lobbyCount = 0;                                                     // number of available online game sessions loaded into lobbyEntries
@@ -171,4 +176,7 @@ private:
     const char *storeRemoteEntityName(const char *entityName);                                         // store server entity name
     void updateEntitiesFromServer(const char *json);                                                   // parse server entity state and update local entity positions
     void updateEntityFromServerLine(Level *currentLevel, const char *line);                            // process one server entity line
+    bool isPendingGhoulKill(const char *ghoulName) const;                                              // check if a ghoul was killed locally
+    void removePendingGhoulKill(const char *ghoulName);                                                // clear a server-confirmed ghoul kill
+    void sendOnlineFireEvent(Weapon *weapon);                                                          // notify the server the player fired
 };

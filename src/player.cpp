@@ -3,6 +3,7 @@
 #include "general.hpp"
 #include "level.hpp"
 #include "enemy.hpp"
+#include "projectile.hpp"
 #include <math.h>
 #include <cinttypes>
 #include HTTP_INCLUDE
@@ -2443,6 +2444,7 @@ void Player::update(Game *game)
         {
             if (equippedWeapon->fire(game->current_level))
             {
+                sendOnlineFireEvent(equippedWeapon);
                 char alert_buf[32];
                 snprintf(alert_buf, sizeof(alert_buf), "Fired %s!", equippedWeapon->name);
                 this->showAlert(alert_buf, 10);
@@ -2567,6 +2569,7 @@ void Player::updateEntityFromServerLine(Level *currentLevel, const char *line)
     {
         if (strcmp(entity_name, this->name) != 0)
         {
+            removePendingGhoulKill(entity_name); // server confirmed the kill
             for (int i = 0; i < currentLevel->getEntityCount(); i++)
             {
                 Entity *e = currentLevel->getEntity(i);
@@ -2587,7 +2590,7 @@ void Player::updateEntityFromServerLine(Level *currentLevel, const char *line)
 
     // Type token; unknown falls back to player.
     char type = 'P';
-    if ((*p == 'P' || *p == 'G' || *p == 'W') &&
+    if ((*p == 'P' || *p == 'G' || *p == 'W' || *p == 'B') &&
         (*(p + 1) == ',' || *(p + 1) == '\0' || *(p + 1) == '\n' || *(p + 1) == '\r'))
     {
         type = *p;
@@ -2596,6 +2599,12 @@ void Player::updateEntityFromServerLine(Level *currentLevel, const char *line)
         {
             p++;
         }
+    }
+
+    // Skip ghouls killed locally (pending server removal).
+    if (type == 'G' && isPendingGhoulKill(entity_name))
+    {
+        return;
     }
 
     // Parse 7 float fields: x,y,z,dir_x,dir_y,plane_x,plane_y
@@ -2729,6 +2738,32 @@ void Player::updateEntityFromServerLine(Level *currentLevel, const char *line)
         currentLevel->entity_add(weapon);
     }
     break;
+    case 'B': // projectile
+    {
+        ProjectileType ptype = PROJECTILE_BULLET;
+        if (strstr(entity_name, "arrow") != nullptr)
+        {
+            ptype = PROJECTILE_ARROW;
+        }
+        else if (strstr(entity_name, "rocket") != nullptr)
+        {
+            ptype = PROJECTILE_ROCKET;
+        }
+        else if (strstr(entity_name, "shell") != nullptr)
+        {
+            ptype = PROJECTILE_SHELL;
+        }
+        Projectile *proj = ENGINE_MEM_NEW Projectile(ptype, 1.0f, Vector(ex, ey, ez));
+        if (!proj)
+            break;
+        proj->name = name_ptr; // Restore unique name (ctor overwrote it)
+        proj->direction.x = e_dir_x;
+        proj->direction.y = e_dir_y;
+        proj->plane.x = e_pl_x;
+        proj->plane.y = e_pl_y;
+        currentLevel->entity_add(proj);
+    }
+    break;
     default: // 'P' player
     {
         Entity *remote = ENGINE_MEM_NEW Entity(
@@ -2777,6 +2812,99 @@ const char *Player::storeRemoteEntityName(const char *entityName)
     remoteEntityNameIndex = (remoteEntityNameIndex + 1) % MAX_REMOTE_ENTITY_NAMES;
     snprintf(slot, 64, "%s", entityName);
     return slot;
+}
+
+void Player::sendOnlineFireEvent(Weapon *weapon)
+{
+    if (!weapon || !ghoulsGame || !ghoulsGame->isOnlineGame())
+        return;
+    const char *weaponName = nullptr;
+    switch (weapon->getWeaponType())
+    {
+    case WEAPON_RIFLE:
+        weaponName = "rifle";
+        break;
+    case WEAPON_SHOTGUN:
+        weaponName = "shotgun";
+        break;
+    case WEAPON_ROCKET_LAUNCHER:
+        weaponName = "rocket-launcher";
+        break;
+    case WEAPON_CROSSBOW:
+        weaponName = "crossbow";
+        break;
+    default:
+        break;
+    }
+    if (!weaponName)
+        return;
+    char msg[96];
+    snprintf(msg, sizeof(msg), "{\"username\": \"%s\", \"fire\": \"%s\"}", this->name, weaponName);
+    HTTP_WEBSOCKET_SEND(msg);
+}
+
+void Player::addPendingGhoulKill(const char *ghoulName)
+{
+    if (!ghoulName || ghoulName[0] == '\0')
+        return;
+    // Record so the server echo doesn't re-create the ghoul.
+    if (!isPendingGhoulKill(ghoulName))
+    {
+        for (uint8_t i = 0; i < MAX_PENDING_GHOUL_KILLS; i++)
+        {
+            if (pendingGhoulKills[i][0] == '\0')
+            {
+                snprintf(pendingGhoulKills[i], 64, "%s", ghoulName);
+                pendingGhoulKillCount++;
+                break;
+            }
+        }
+    }
+    // Notify the server so it removes the ghoul for everyone.
+    char msg[96];
+    snprintf(msg, sizeof(msg), "{\"username\": \"%s\", \"kill\": \"%s\"}", this->name, ghoulName);
+    HTTP_WEBSOCKET_SEND(msg);
+}
+
+bool Player::isPendingGhoulKill(const char *ghoulName) const
+{
+    if (!ghoulName || ghoulName[0] == '\0')
+        return false;
+    for (uint8_t i = 0; i < MAX_PENDING_GHOUL_KILLS; i++)
+    {
+        if (pendingGhoulKills[i][0] != '\0' && strcmp(pendingGhoulKills[i], ghoulName) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Player::removePendingGhoulKill(const char *ghoulName)
+{
+    if (!ghoulName || ghoulName[0] == '\0')
+        return;
+    for (uint8_t i = 0; i < MAX_PENDING_GHOUL_KILLS; i++)
+    {
+        if (pendingGhoulKills[i][0] != '\0' && strcmp(pendingGhoulKills[i], ghoulName) == 0)
+        {
+            pendingGhoulKills[i][0] = '\0';
+            if (pendingGhoulKillCount > 0)
+            {
+                pendingGhoulKillCount--;
+            }
+            return;
+        }
+    }
+}
+
+void Player::clearPendingGhoulKills()
+{
+    for (uint8_t i = 0; i < MAX_PENDING_GHOUL_KILLS; i++)
+    {
+        pendingGhoulKills[i][0] = '\0';
+    }
+    pendingGhoulKillCount = 0;
 }
 
 void Player::userRequest(RequestType requestType)
