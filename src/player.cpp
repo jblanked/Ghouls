@@ -2557,6 +2557,33 @@ void Player::updateEntityFromServerLine(Level *currentLevel, const char *line)
     if (!currentLevel || !line || line[0] == '\0')
         return;
 
+    // Server time-of-day sync: "TIME,<phase>,<tick>"
+    if (line[0] == 'T' && line[1] == 'I' && line[2] == 'M' && line[3] == 'E')
+    {
+        if (ghoulsGame)
+        {
+            Time *gt = ghoulsGame->getGameTime();
+            if (gt)
+            {
+                const TimeOfDay serverPhase = (line[5] == 'N') ? TIME_NIGHT : TIME_DAY;
+                const char *tickStr = line + 5;
+                while (*tickStr != ',' && *tickStr != '\0')
+                {
+                    tickStr++;
+                }
+                if (*tickStr == ',')
+                {
+                    gt->set((uint32_t)atoi(tickStr + 1));
+                }
+                if (gt->getTimeOfDay() != serverPhase)
+                {
+                    gt->setTimeOfDay(serverPhase);
+                }
+            }
+        }
+        return;
+    }
+
     // Field 0: name (up to first comma)
     const char *p = line;
     const char *comma = strchr(p, ',');
